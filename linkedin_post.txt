@@ -1,0 +1,29 @@
+Most AI agents are stateless. They forget everything the moment the conversation ends.
+
+That's fine for a chatbot. It's a real problem when you're debugging a production outage at 2 AM and the agent has no idea your team fixed the same Redis OOM six months ago.
+
+I built DevOpsGuard — an incident response agent that remembers every post-mortem your team has ever written, and surfaces the exact fix when a similar error fires again.
+
+Here's what changes when you add Hindsight agent memory:
+
+Without memory → "Increase maxmemory, check your eviction policy" (generic, useless at 2 AM)
+
+With memory → "This looks like INC-101 from September. You fixed it by changing maxmemory-policy to volatile-lru and scaling to 4GB. The fix may have been reverted." (specific, actionable, grounded in your history)
+
+The technical setup:
+→ Hindsight retain() ingests post-mortems as free-form text — no schema needed
+→ Hindsight recall() runs 4 retrieval strategies in parallel (semantic, BM25, graph, temporal)
+→ Recalled memories inject directly into a Groq prompt for structured diagnosis
+→ Hindsight reflect() synthesises cross-incident patterns without an extra LLM call
+
+The thing that surprised me most: after ingesting just 5 post-mortems, recall returned 33 structured facts. Hindsight doesn't store text — it extracts entities, relationships, and facts. That's why the retrieval quality is so different from a naive vector search.
+
+The before/after contrast is real and immediate. The memory layer is what makes the difference.
+
+Project repo: [YOUR GITHUB REPO URL HERE]
+
+#AIAgents #AgentMemory #Hindsight #AIMemory #LLM
+
+---
+FIRST COMMENT (post immediately after publishing):
+Here's Hindsight if you want to build on top of it: https://github.com/vectorize-io/hindsight
